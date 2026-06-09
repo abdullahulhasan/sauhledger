@@ -23,14 +23,18 @@ jobs:
           flutter-version: '3.24.0'
           channel: 'stable'
           
+      - name: Find pubspec.yaml
+        run: find . -name "pubspec.yaml" -maxdepth 3
+
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          cd $(find . -name "pubspec.yaml" -maxdepth 3 | head -1 | xargs dirname)
+          flutter pub get
         
       - name: Build APK
-        run: flutter build apk --debug
+        run: |
+          cd $(find . -name "pubspec.yaml" -maxdepth 3 | head -1 | xargs dirname)
+          flutter build apk --debug
         
       - name: Upload APK
         uses: actions/upload-artifact@v4
-        with:
-          name: sauh-ledger-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk

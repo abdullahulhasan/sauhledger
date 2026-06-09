@@ -1,0 +1,70 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net default catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Reusable, hardened global security helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Master Match Gate for strict User Data Isolation
+    match /users/{userId} {
+      // Allow user creation by authenticated userId during registration
+      allow create: if request.auth != null && request.auth.uid == userId;
+      
+      // Allow updates/deletes if isOwner
+      allow update, delete: if isOwner(userId);
+      
+      // Allow get/read if authenticated as that user
+      allow get: if isOwner(userId);
+
+      // Allow queries (list) if is owner OR if the query supplies both correct email and securityPin filters!
+      allow list: if isOwner(userId) || (
+        resource != null && 
+        "email" in request.query.filters && 
+        "securityPin" in request.query.filters && 
+        resource.data.email == request.query.filters.email[0].value && 
+        resource.data.securityPin == request.query.filters.securityPin[0].value
+      );
+
+      // Re-route nested paths to Owner check only
+      match /profile/metadata {
+        allow read, write: if isOwner(userId);
+      }
+      match /settings/app {
+        allow read, write: if isOwner(userId);
+      }
+      match /businesses/{businessId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /customers/{customerId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /transactions/{transactionId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /gst_history/{gstRecordId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /reminders/{reminderId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /deleted_items/{deletedItemId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+  }
+}

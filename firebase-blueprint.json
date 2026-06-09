@@ -1,0 +1,195 @@
+{
+  "entities": {
+    "userProfile": {
+      "title": "UserProfile",
+      "description": "User profile metadata",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "fullName": { "type": "string" },
+        "mobileNumber": { "type": "string" },
+        "email": { "type": "string" },
+        "isGuest": { "type": "boolean" },
+        "avatarUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "fullName", "email", "isGuest"]
+    },
+    "userAccount": {
+      "title": "UserAccount",
+      "description": "Secure user account core document including credentials",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "fullName": { "type": "string" },
+        "mobileNumber": { "type": "string" },
+        "email": { "type": "string" },
+        "securityPin": { "type": "string" },
+        "password": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "fullName", "mobileNumber", "email", "securityPin", "password", "createdAt"]
+    },
+    "appSettings": {
+      "title": "AppSettings",
+      "description": "Master sound, haptic and security configurations",
+      "type": "object",
+      "properties": {
+        "soundHaptics": { "type": "object" },
+        "security": { "type": "object" },
+        "currency": { "type": "string" },
+        "language": { "type": "string" },
+        "backupEnabled": { "type": "boolean" },
+        "notificationsEnabled": { "type": "boolean" }
+      },
+      "required": ["soundHaptics", "security", "currency", "language"]
+    },
+    "business": {
+      "title": "Business",
+      "description": "Enterprise profiles owned by the account",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "isDefault": { "type": "boolean" },
+        "phone": { "type": "string" },
+        "gstNumber": { "type": "string" },
+        "address": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "isDefault", "createdAt"]
+    },
+    "customer": {
+      "title": "Customer",
+      "description": "Parties and customer ledger entities",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "openingBalance": { "type": "number" },
+        "currentBalance": { "type": "number" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "businessId", "name", "phone", "openingBalance", "currentBalance", "createdAt"]
+    },
+    "transaction": {
+      "title": "Transaction",
+      "description": "Ledger entry for credit given or cash received",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "amount": { "type": "number" },
+        "type": { "type": "string", "enum": ["given", "received", "expense", "salary", "loan", "transfer"] },
+        "date": { "type": "string" },
+        "notes": { "type": "string" },
+        "category": { "type": "string" },
+        "gstApplied": { "type": "boolean" },
+        "gstRate": { "type": "number" },
+        "gstType": { "type": "string" },
+        "gstAmount": { "type": "number" },
+        "taxableValue": { "type": "number" },
+        "isGstIncluded": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "businessId", "amount", "type", "date", "category", "gstApplied", "createdAt"]
+    },
+    "gstRecord": {
+      "title": "GstRecord",
+      "description": "Inward/outward GST tax compliance ledger mapping",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "transactionId": { "type": "string" },
+        "type": { "type": "string", "enum": ["inward", "outward"] },
+        "gstRate": { "type": "number" },
+        "gstAmount": { "type": "number" },
+        "taxableValue": { "type": "number" },
+        "cgst": { "type": "number" },
+        "sgst": { "type": "number" },
+        "igst": { "type": "number" },
+        "filingMonth": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "filed"] },
+        "date": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "businessId", "type", "gstRate", "gstAmount", "taxableValue", "cgst", "sgst", "igst", "filingMonth", "status", "date"]
+    },
+    "reminder": {
+      "title": "Reminder",
+      "description": "Alert schedules for outstanding accounts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "title": { "type": "string" },
+        "amount": { "type": "number" },
+        "dueDate": { "type": "string" },
+        "notes": { "type": "string" },
+        "resolved": { "type": "boolean" },
+        "isGstReminder": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "businessId", "title", "amount", "dueDate", "resolved", "isGstReminder", "createdAt"]
+    },
+    "deletedItem": {
+      "title": "DeletedItem",
+      "description": "Log of items deleted from the ledger instance for offline tracking and sync recovery",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "entityType": { "type": "string", "enum": ["business", "customer", "transaction", "gst", "reminder"] },
+        "originalId": { "type": "string" },
+        "originalData": { "type": "string" },
+        "deletedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "entityType", "originalId", "originalData", "deletedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/userAccount" },
+      "description": "User core registration document containing passwords and PIN"
+    },
+    "/users/{userId}/profile/metadata": {
+      "schema": { "$ref": "#/entities/userProfile" },
+      "description": "Primary user profile document"
+    },
+    "/users/{userId}/settings/app": {
+      "schema": { "$ref": "#/entities/appSettings" },
+      "description": "App settings for sound, haptic feedback and PIN configurations"
+    },
+    "/users/{userId}/businesses/{businessId}": {
+      "schema": { "$ref": "#/entities/business" },
+      "description": "Businesses defined or owned by the accounts"
+    },
+    "/users/{userId}/customers/{customerId}": {
+      "schema": { "$ref": "#/entities/customer" },
+      "description": "Ledger directory profile of client parties"
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/transaction" },
+      "description": "Ledger ledger entry transactions"
+    },
+    "/users/{userId}/gst_history/{gstRecordId}": {
+      "schema": { "$ref": "#/entities/gstRecord" },
+      "description": "GST outward / inward filing records"
+    },
+    "/users/{userId}/reminders/{reminderId}": {
+      "schema": { "$ref": "#/entities/reminder" },
+      "description": "Collections of premium notification reminders"
+    },
+    "/users/{userId}/deleted_items/{deletedItemId}": {
+      "schema": { "$ref": "#/entities/deletedItem" },
+      "description": "Audit trails of offline and online drops"
+    }
+  }
+}
